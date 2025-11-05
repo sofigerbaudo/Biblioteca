@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -31,7 +31,7 @@
     <nav>
         <a href="#agregar">Agregar</a>
         <a href="#reservar">Reservar</a>
-        <a href="#retirar">Retirar</a>
+        <a href="#retirar">Devolver</a>
         <a href="#estado">Estado</a>
     </nav>
 
@@ -42,7 +42,7 @@
         <label>Autor:</label>
         <input type="text" id="autor"><br>
         <label>Año:</label>
-        <input type="number" id="anio"><br>
+        <input type="number" id="año"><br>
         <input type="button" onclick="agregarLibro()" value="Agregar">
         <p id="resultado_agregar"></p>
     </section>
@@ -58,20 +58,20 @@
     </section>
 
     <section id="retirar">
-        <h2>Retirar Libro</h2>
+        <h2>Devolver Libro</h2>
         <label>Nombre del libro:</label>
-        <input type="text" id="nombre_retirar"><br>
+        <input type="text" id="nombre_devolver"><br>
         <label>Socio:</label>
-        <input type="text" id="socio_retirar"><br>
-        <input type="button" onclick="retirarLibro()" value="Retirar">
-        <p id="resultado_retirar"></p>
+        <input type="text" id="socio_devolver"><br>
+        <input type="button" onclick="devolverLibro()" value="Devolver">
+        <p id="resultado_devolver"></p>
     </section>
 
     <section id="estado">
-        <h2>Estado del Libro</h2>
+        <h2>Consultar Estado del Libro</h2>
         <label>Nombre del libro:</label>
         <input type="text" id="nombre_estado"><br>
-        <input type="button" onclick="verEstado()" value="Ver estado">
+        <input type="button" onclick="consultarEstado()" value="Consultar">
         <p id="resultado_estado"></p>
     </section>
 
@@ -87,86 +87,61 @@
             mostrarInfo() {
                 return "El libro '" + this.nombre + "' (" + this.año + "), del autor " + this.autor + ". Estado: " + this.estado;
             }
-        }
 
-        class Biblioteca {
-            constructor() {
-                this.libros = [];
-            }
-
-            agregarLibro(libro) {
-                this.libros.push(libro);
-                return "Libro agregado correctamente.";
-            }
-
-            buscarLibro(nombre) {
-                return this.libros.find(libro => libro.nombre.toLowerCase() === nombre.toLowerCase());
-            }
-
-            reservar(nombre, socio) {
-                var libro = this.buscarLibro(nombre);
-                if (libro && libro.estado === "Disponible") {
-                    libro.estado = "Reservado por " + socio;
+            reservar() {
+                if (this.estado === "Disponible") {
+                    this.estado = "Reservado";
                     return "Libro reservado correctamente.";
-                } else if (libro) {
+                } else {
                     return "El libro ya está reservado o retirado.";
-                } else {
-                    return "Libro no encontrado.";
                 }
             }
 
-            retirar(nombre, socio) {
-                var libro = this.buscarLibro(nombre);
-                if (libro && libro.estado === "Disponible") {
-                    libro.estado = "Retirado por " + socio;
-                    return "Libro retirado correctamente.";
-                } else if (libro) {
-                    return "El libro no está disponible.";
+            devolver() {
+                if (this.estado === "Reservado") {
+                    this.estado = "Disponible";
+                    return "Libro devuelto correctamente.";
                 } else {
-                    return "Libro no encontrado.";
-                }
-            }
-
-            verEstado(nombre) {
-                var libro = this.buscarLibro(nombre);
-                if (libro) {
-                    return libro.mostrarInfo();
-                } else {
-                    return "Libro no encontrado.";
+                    return "El libro no está reservado.";
                 }
             }
         }
 
-        var biblioteca = new Biblioteca();
+        var nuevo;
 
         function agregarLibro() {
             var nombre = document.getElementById("nombre").value;
             var autor = document.getElementById("autor").value;
             var año = document.getElementById("año").value;
 
-            if (nombre !== "" && autor !== "" && año !== "") {
-                var nuevo = new Libro(nombre, autor, año);
-                document.getElementById("resultado_agregar").innerHTML = biblioteca.agregarLibro(nuevo);
-            } else {
-                document.getElementById("resultado_agregar").innerHTML = "Completa todos los campos.";
-            }
+            nuevo = new Libro(nombre, autor, año);
+            document.getElementById("resultado_agregar").innerHTML = nuevo.mostrarInfo();
         }
 
         function reservarLibro() {
-            var nombre = document.getElementById("nombre_reserva").value;
-            var socio = document.getElementById("socio_reserva").value;
-            document.getElementById("resultado_reserva").innerHTML = biblioteca.reservar(nombre, socio);
+            if (nuevo) {
+                document.getElementById("resultado_reserva").innerHTML = nuevo.reservar();
+                document.getElementById("resultado_agregar").innerHTML = nuevo.mostrarInfo();
+            } else {
+                document.getElementById("resultado_reserva").innerHTML = "Primero agregá un libro.";
+            }
         }
 
-        function retirarLibro() {
-            var nombre = document.getElementById("nombre_retirar").value;
-            var socio = document.getElementById("socio_retirar").value;
-            document.getElementById("resultado_retirar").innerHTML = biblioteca.retirar(nombre, socio);
+        function devolverLibro() {
+            if (nuevo) {
+                document.getElementById("resultado_devolver").innerHTML = nuevo.devolver();
+                document.getElementById("resultado_agregar").innerHTML = nuevo.mostrarInfo();
+            } else {
+                document.getElementById("resultado_devolver").innerHTML = "Primero agregá un libro.";
+            }
         }
 
-        function verEstado() {
-            var nombre = document.getElementById("nombre_estado").value;
-            document.getElementById("resultado_estado").innerHTML = biblioteca.verEstado(nombre);
+        function consultarEstado() {
+            if (nuevo) {
+                document.getElementById("resultado_estado").innerHTML = nuevo.mostrarInfo();
+            } else {
+                document.getElementById("resultado_estado").innerHTML = "Primero agregá un libro.";
+            }
         }
     </script>
 </body>
